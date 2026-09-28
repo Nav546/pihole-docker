@@ -1,5 +1,6 @@
 # Pi-hole (network-wide DNS ad blocker) running as a container.
 # Image is pulled from Docker Hub - no Dockerfile needed for this project.
+name: pihole-docker
 services:
   pihole:
     image: pihole/pihole:2026.07.2
