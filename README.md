@@ -2,7 +2,7 @@
 
 
 
-&#x20;  !\[Pi-hole dashboard](dashboard.png)
+&#x20;  !\[Pi-hole dashboard](pi.png)
 
 
 
