@@ -1,5 +1,7 @@
 # Pi-hole in Docker
 
+![Pi-hole dashboard](dashboard.png)
+
 Network-wide DNS ad/tracker blocker, run as a container from the official
 `pihole/pihole` image. No custom code: this project is about **pulling and
 configuring an existing image** (Compose, environment variables, ports,
