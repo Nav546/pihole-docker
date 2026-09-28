@@ -2,7 +2,7 @@
 # Image is pulled from Docker Hub - no Dockerfile needed for this project.
 services:
   pihole:
-    image: pihole/pihole:latest
+    image: pihole/pihole:2026.07.2
     container_name: pihole
     ports:
       # DNS (TCP + UDP)

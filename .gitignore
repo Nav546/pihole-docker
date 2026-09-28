@@ -1,2 +1,5 @@
 .env
 .DS_Store
+
+*.tgz
+upgrade-log.txt
