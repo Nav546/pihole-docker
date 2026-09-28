@@ -69,3 +69,11 @@ container is down, those devices lose DNS.
 ## Upgrading. 
 
 This project has been tested upgrading from Pi-hole 2026.04.1, Core 6.4.2, FTL 6.6.1, to 2026.07.2, Core 6.4.3, FTL 6.7, on the same named volume. Deny list entries, the blocklist, and query history all survived the upgrade. This was a minor version upgrade, not a major schema change, so treat larger jumps with more caution. Before upgrading, back up the volume: `docker run --rm -v pihole-docker-project_pihole_data:/data -v ${PWD}:/backup alpine tar czf /backup/pihole_backup.tgz -C /data .` Then update the image tag in docker-compose.yml and run `docker compose up -d` to pull and restart. To restore from a backup if something goes wrong: `docker run --rm -v pihole-docker-project_pihole_data:/data -v ${PWD}:/backup alpine tar xzf /backup/pihole_backup.tgz -C /data`.
+
+**Before upgrade (Pi-hole 2026.04.1):**
+
+![Before upgrade](dashboard-1.png)
+
+**After upgrade (Pi-hole 2026.07.2):**
+
+![After upgrade](upgrade-query-log.png)
