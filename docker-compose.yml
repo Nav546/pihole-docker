@@ -1,28 +1,58 @@
-# Pi-hole (network-wide DNS ad blocker) running as a container.
-# Image is pulled from Docker Hub - no Dockerfile needed for this project.
+# Pi-hole (network-wide DNS ad blocker) + Unbound (recursive DNS resolver).
+# Pi-hole forwards its queries to Unbound instead of a third-party DNS provider.
 name: pihole-docker
+
 services:
+  unbound:
+    image: mvance/unbound:latest
+    container_name: unbound
+    restart: unless-stopped
+    networks:
+      dns_net:
+        ipv4_address: ${UNBOUND_IP}
+    healthcheck:
+      test: ["CMD", "drill", "@127.0.0.1", "cloudflare.com"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
   pihole:
     image: pihole/pihole:2026.07.2
     container_name: pihole
+    restart: unless-stopped
+    depends_on:
+      unbound:
+        condition: service_healthy
+    networks:
+      dns_net:
+        ipv4_address: ${PIHOLE_IP}
     ports:
-      # DNS (TCP + UDP)
-      - "53:53/tcp"
-      - "53:53/udp"
-      # Web admin UI. Mapped to 8080 to avoid clashing with anything on port 80.
-      - "8080:80/tcp"
+      # DNS published on 5300 because Windows already uses port 53 and mDNS uses 5353.
+      - "5300:53/tcp"
+      - "5300:53/udp"
+      # Web admin UI. Port comes from .env to avoid clashing with anything on port 80.
+      - "${PIHOLE_WEB_PORT:-8080}:80/tcp"
       - "8443:443/tcp"
     environment:
       TZ: ${TZ:-Australia/Melbourne}
       # Admin password comes from the .env file (never hardcode it in this file).
       FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD}
-      # Required when Docker uses its default bridge network.
+      # Send all queries to the Unbound container.
+      FTLCONF_dns_upstreams: ${UNBOUND_IP}#53
+      # Required when Docker uses a bridge network.
       FTLCONF_dns_listeningMode: "all"
     volumes:
-      # Named volume: keeps Pi-hole's config, blocklists and query database
+      # Named volume: keeps config, blocklists and query database
       # between restarts and image upgrades.
       - pihole_data:/etc/pihole
-    restart: unless-stopped
+
+networks:
+  dns_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DNS_SUBNET}
 
 volumes:
   pihole_data:
